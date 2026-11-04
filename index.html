@@ -1,305 +1,513 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Brahma's Family Tree – Puranic Lineage Explorer</title>
-<script src="https://cdn.tailwindcss.com/3.4.17"></script>
-<script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-body{font-family:'Nunito',system-ui,sans-serif;background:radial-gradient(ellipse at top,#1e1b4b 0,#020617 55%) fixed,#020617;color:#e2e8f0}
-.title{font-family:'Cinzel',Georgia,serif}
-.glow{text-shadow:0 0 18px rgba(251,191,36,.55)}
-.card{transition:transform .15s,box-shadow .15s}
-.card:hover{transform:translateY(-2px);box-shadow:0 0 18px rgba(251,191,36,.25)}
-.stage{animation:rise .35s ease-out}
-@keyframes rise{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.stage{animation:none}.card{transition:none}}
-.scroll-x{overflow-x:auto;scrollbar-width:thin}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore simple, illustrated family trees from Hindu stories and epics.">
+  <title>Hindu Mythology Family Tree</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #29233b;
+      --muted: #685f76;
+      --paper: #fffaf1;
+      --card: #fffefa;
+      --line: #c9b9d8;
+      --accent: #7844a5;
+      --accent-light: #f0e5f7;
+      --gold: #b77720;
+      font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: linear-gradient(180deg, #f7effa 0, var(--paper) 22rem);
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 2rem 1rem 1.25rem;
+      text-align: center;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: .4rem; font-size: clamp(1.8rem, 5vw, 2.8rem); }
+    h2 { margin-bottom: .45rem; }
+    .subtitle { max-width: 42rem; margin: 0 auto; color: var(--muted); line-height: 1.55; }
+
+    main { max-width: 1180px; margin: 0 auto; padding: 0 1rem 2rem; }
+
+    .story-tabs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: .55rem;
+      margin: .5rem auto 1.25rem;
+    }
+
+    .story-tabs button {
+      border: 1px solid #d5c4e1;
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--ink);
+      padding: .65rem 1rem;
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .story-tabs button[aria-pressed="true"] {
+      color: white;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    button:focus-visible, summary:focus-visible, a:focus-visible {
+      outline: 3px solid #e0a336;
+      outline-offset: 3px;
+    }
+
+    .intro, .tree-card, .sources {
+      background: var(--card);
+      border: 1px solid #eadff0;
+      border-radius: 1rem;
+      box-shadow: 0 8px 26px #39214d0d;
+    }
+
+    .intro { padding: 1.2rem 1.35rem; }
+    .intro p { margin-bottom: .5rem; line-height: 1.6; }
+    .intro p:last-child { margin-bottom: 0; }
+    .notice { color: #564463; font-size: .94rem; }
+
+    #trees {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .tree-card { overflow: hidden; }
+    .tree-heading { padding: 1rem 1.25rem 0; }
+    .tree-heading h3 { margin-bottom: .25rem; font-size: 1.05rem; }
+    .tree-heading p { margin-bottom: 0; color: var(--muted); font-size: .9rem; }
+    .tree-scroll { overflow-x: auto; padding: 1rem .75rem 1.5rem; }
+    .tree { min-width: max-content; }
+    .tree ul {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin: 0;
+      padding: 1.8rem 0 0;
+    }
+
+    .tree > ul { padding-top: 0; }
+    .tree li {
+      position: relative;
+      list-style: none;
+      padding: 1.8rem .7rem 0;
+      text-align: center;
+    }
+
+    .tree li::before, .tree li::after {
+      position: absolute;
+      top: 0;
+      right: 50%;
+      width: 50%;
+      height: 1.8rem;
+      border-top: 2px solid var(--line);
+      content: "";
+    }
+
+    .tree li::after {
+      right: auto;
+      left: 50%;
+      border-left: 2px solid var(--line);
+    }
+
+    .tree li:only-child::before, .tree li:only-child::after { display: none; }
+    .tree li:only-child { padding-top: 0; }
+    .tree li:first-child::before, .tree li:last-child::after { border: 0; }
+    .tree li:last-child::before { border-right: 2px solid var(--line); }
+    .tree li:first-child::after { border-radius: .45rem 0 0 0; }
+    .tree ul::before {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      height: 1.8rem;
+      border-left: 2px solid var(--line);
+      content: "";
+    }
+
+    .tree > ul > li::before, .tree > ul > li::after,
+    .tree > ul > li > ul::before { display: none; }
+
+    .family-unit {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: .4rem;
+    }
+
+    .person {
+      width: 155px;
+      max-width: 42vw;
+      border: 1px solid #e6d9ec;
+      border-top: 3px solid var(--accent);
+      border-radius: .8rem;
+      background: white;
+      text-align: left;
+      box-shadow: 0 4px 12px #39214d0d;
+    }
+
+    .person summary {
+      display: grid;
+      grid-template-columns: 2rem 1fr;
+      align-items: center;
+      gap: .5rem;
+      min-height: 3.8rem;
+      padding: .55rem .65rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .person summary::-webkit-details-marker { display: none; }
+    .person summary::after {
+      grid-column: 2;
+      color: var(--muted);
+      content: "Tap for story";
+      font-size: .68rem;
+    }
+
+    .person[open] summary::after { content: "Tap to close"; }
+    .emoji { font-size: 1.5rem; }
+    .person-name { font-weight: 700; line-height: 1.15; }
+    .person-note {
+      margin: 0;
+      padding: 0 .7rem .75rem;
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.45;
+    }
+
+    .partner-mark {
+      align-self: center;
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+
+    .relationship {
+      position: absolute;
+      z-index: 1;
+      top: .55rem;
+      left: 50%;
+      width: max-content;
+      max-width: 180px;
+      padding: .15rem .4rem;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: .68rem;
+      line-height: 1.25;
+    }
+
+    .sources {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.55;
+    }
+
+    .sources h2 { color: var(--ink); font-size: 1rem; }
+    .sources p:last-child { margin-bottom: 0; }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 560px) {
+      header { padding-top: 1.5rem; }
+      .tree-scroll { padding-right: .25rem; padding-left: .25rem; }
+      .tree li { padding-right: .4rem; padding-left: .4rem; }
+      .person { width: 138px; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .tree-card { animation: appear .25s ease-out; }
+      @keyframes appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+    }
+  </style>
 </head>
-<body class="min-h-screen">
-<header class="sticky top-0 z-30 bg-slate-950/90 backdrop-blur border-b border-amber-500/30">
-  <div class="max-w-6xl mx-auto px-3 py-2 flex flex-wrap items-center gap-2">
-    <h1 class="title text-amber-300 glow text-lg sm:text-xl mr-auto">🕉️ Brahma's Family Tree</h1>
-    <button id="back" class="px-3 py-1.5 rounded-lg border border-amber-500/30 text-sm flex items-center gap-1 hover:bg-amber-500/10"><i data-lucide="arrow-left" class="w-4 h-4"></i>Back</button>
-    <button id="home" class="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-sm flex items-center gap-1 hover:bg-amber-400"><i data-lucide="home" class="w-4 h-4"></i>Reset to Brahma</button>
-  </div>
-  <nav id="crumbs" class="max-w-6xl mx-auto px-3 pb-2 text-xs sm:text-sm scroll-x whitespace-nowrap" aria-label="Breadcrumb"></nav>
-  <div class="max-w-6xl mx-auto px-3 pb-3">
-    <div class="relative">
-      <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-amber-300"></i>
-      <input id="q" type="search" placeholder="Search by name… (Kashyapa, Prahlada, Arjuna)" class="w-full pl-9 pr-3 py-2 rounded-lg bg-zinc-900 border border-amber-500/30 focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm">
-    </div>
-    <div id="pills" class="flex gap-2 mt-2 scroll-x pb-1"></div>
-    <div id="results" class="hidden mt-2 max-h-64 overflow-y-auto rounded-lg border border-amber-500/30 bg-zinc-900 divide-y divide-slate-800"></div>
-  </div>
-</header>
+<body>
+  <header>
+    <h1>🌳 Hindu Mythology Family Tree</h1>
+    <p class="subtitle">Follow a few well-known families and story lineages. Choose a story, then tap any person to learn more.</p>
+  </header>
 
-<main id="stage" class="max-w-6xl mx-auto px-3 py-5"></main>
+  <main>
+    <nav id="story-tabs" class="story-tabs" aria-label="Choose a family tree"></nav>
+    <section id="story-intro" class="intro" aria-live="polite"></section>
+    <section id="trees" aria-label="Family tree diagrams"></section>
+    <section class="sources" aria-labelledby="sources-title">
+      <h2 id="sources-title">A note about these stories</h2>
+      <p>These are short, selected maps, not one complete or definitive family tree. Hindu texts and regional traditions sometimes tell relationships differently. Some diagrams show descendants with generations omitted; tap a person for context.</p>
+      <p>Story references: <i>Bhagavata Purana</i>, Cantos 3, 4, 8 and 10; <i>Valmiki Ramayana</i>, Bala Kanda and Ayodhya Kanda; and the <i>Mahabharata</i>, Adi Parva.</p>
+    </section>
+  </main>
 
-<aside id="drawer" class="fixed inset-y-0 right-0 z-40 w-full sm:w-[28rem] bg-slate-950 border-l border-amber-500/40 shadow-2xl translate-x-full transition-transform duration-300 overflow-y-auto" aria-hidden="true"></aside>
-<div id="scrim" class="hidden fixed inset-0 z-30 bg-black/60"></div>
+  <script>
+    const people = {
+      vishnu: { name: "Vishnu", emoji: "🪷", note: "In this creation story, a lotus grows from Vishnu's navel and Brahma appears on it." },
+      brahma: { name: "Brahma", emoji: "🧘", note: "The creator in this story. He is shown here as the beginning of several creation lineages." },
+      marichi: { name: "Marichi", emoji: "✨", note: "One of Brahma's mind-born sages in many Puranic accounts." },
+      kashyapa: { name: "Kashyapa", emoji: "🌈", note: "A sage linked to many families of gods and other beings in Puranic stories." },
+      manu: { name: "Svayambhuva Manu", emoji: "👑", note: "The first Manu in this creation account. The story of Manu and Shatarupa is told in the Bhagavata Purana." },
+      shatarupa: { name: "Shatarupa", emoji: "🌸", note: "Manu's wife in this creation account; together they are described as the first human pair." },
+      daksha: { name: "Daksha", emoji: "🌿", note: "A Prajapati. In this account, his daughters include Aditi and Diti." },
+      aditi: { name: "Aditi", emoji: "☀️", note: "Kashyapa's wife and mother of the Adityas, including Indra. She is also the mother of Vamana in this story." },
+      diti: { name: "Diti", emoji: "🌙", note: "Kashyapa's wife and mother of the Daityas in this account." },
+      indra: { name: "Indra", emoji: "⚡", note: "A leading Deva, associated with the sky and storms." },
+      vamana: { name: "Vamana", emoji: "☂️", note: "An avatar of Vishnu who asks King Bali for three steps of land." },
+      hiranyakashipu: { name: "Hiranyakashipu", emoji: "🦁", note: "A Daitya king and Prahlada's father in the story of Narasimha." },
+      prahlada: { name: "Prahlada", emoji: "🙏", note: "Remembered for devotion to Vishnu, even when his father opposed him." },
+      surya: { name: "Surya", emoji: "🌞", note: "The Sun deity. Some tellings trace the Solar Dynasty through him." },
+      vaivasvata: { name: "Vaivasvata Manu", emoji: "⛵", note: "Manu of the present age in this tradition and an ancestor in the Solar Dynasty." },
+      ikshvaku: { name: "Ikshvaku", emoji: "☀️", note: "Named as an early king of the Solar Dynasty." },
+      dasharatha: { name: "Dasharatha", emoji: "🏯", note: "King of Ayodhya and father of Rama, Bharata, Lakshmana and Shatrughna." },
+      kaushalya: { name: "Kaushalya", emoji: "👸", note: "Queen of Ayodhya and Rama's mother." },
+      kaikeyi: { name: "Kaikeyi", emoji: "👸", note: "Queen of Ayodhya and Bharata's mother." },
+      sumitra: { name: "Sumitra", emoji: "👸", note: "Queen of Ayodhya and mother of Lakshmana and Shatrughna." },
+      rama: { name: "Rama", emoji: "🏹", note: "Prince of Ayodhya and a central hero of the Ramayana." },
+      sita: { name: "Sita", emoji: "🌾", note: "Rama's wife. In the Ramayana, she is found in a furrow by King Janaka." },
+      lakshmana: { name: "Lakshmana", emoji: "🗡️", note: "Rama's brother, known for accompanying him into exile." },
+      bharata: { name: "Bharata", emoji: "👞", note: "Rama's brother, who rules Ayodhya in Rama's name during his absence." },
+      shatrughna: { name: "Shatrughna", emoji: "🛡️", note: "Rama's brother and Lakshmana's twin." },
+      lava: { name: "Lava", emoji: "🎵", note: "One of the twin sons of Rama and Sita in later Ramayana tradition." },
+      kusha: { name: "Kusha", emoji: "🎵", note: "One of the twin sons of Rama and Sita in later Ramayana tradition." },
+      pandu: { name: "Pandu", emoji: "🏹", note: "A Kuru king. The Pandavas are his sons in the royal family; the epic also describes divine fathers." },
+      kunti: { name: "Kunti", emoji: "🌺", note: "Mother of Yudhishthira, Bhima and Arjuna. The epic says she used a boon to call on deities." },
+      madri: { name: "Madri", emoji: "🌸", note: "Mother of the twins Nakula and Sahadeva, who are associated with the Ashvins." },
+      yudhishthira: { name: "Yudhishthira", emoji: "⚖️", note: "The eldest Pandava, associated with Dharma." },
+      bhima: { name: "Bhima", emoji: "💪", note: "A Pandava famed for his strength and associated with Vayu." },
+      arjuna: { name: "Arjuna", emoji: "🏹", note: "A Pandava and archer; Krishna guides him in the Bhagavad Gita." },
+      nakula: { name: "Nakula", emoji: "🐎", note: "One of the twin Pandavas, son of Madri in the epic." },
+      sahadeva: { name: "Sahadeva", emoji: "📘", note: "One of the twin Pandavas, son of Madri in the epic." },
+      dhritarashtra: { name: "Dhritarashtra", emoji: "👑", note: "Kuru king and father of the Kauravas. His family story includes a special birth through Vyasa." },
+      gandhari: { name: "Gandhari", emoji: "🎀", note: "Queen and mother of the Kauravas." },
+      duryodhana: { name: "Duryodhana", emoji: "🛡️", note: "The eldest of the Kaurava brothers in the Mahabharata." },
+      dushasana: { name: "Dushasana", emoji: "⚔️", note: "One of Duryodhana's brothers." },
+      subhadra: { name: "Subhadra", emoji: "🌸", note: "Krishna's sister and Arjuna's wife." },
+      abhimanyu: { name: "Abhimanyu", emoji: "🌀", note: "Son of Arjuna and Subhadra, remembered for his bravery in battle." },
+      parikshit: { name: "Parikshit", emoji: "👶", note: "Son of Abhimanyu. The Bhagavata Purana is framed as a teaching to King Parikshit." },
+      vasudeva: { name: "Vasudeva", emoji: "🕯️", note: "A Yadava prince and father of Krishna and Balarama in these stories." },
+      devaki: { name: "Devaki", emoji: "🌷", note: "Krishna's mother." },
+      rohini: { name: "Rohini", emoji: "🌼", note: "Balarama's mother in the story." },
+      krishna: { name: "Krishna", emoji: "🦚", note: "A central figure in the Mahabharata and an avatar of Vishnu in many traditions." },
+      rukmini: { name: "Rukmini", emoji: "🌹", note: "Krishna's principal queen in the Bhagavata Purana." },
+      balarama: { name: "Balarama", emoji: "🌾", note: "Krishna's elder brother. One account says he was transferred from Devaki's womb to Rohini's." },
+      pradyumna: { name: "Pradyumna", emoji: "🏹", note: "Son of Krishna and Rukmini in the Bhagavata Purana." }
+    };
 
-<script>
-/* id|name|title|cats|father|mother|spouses|emoji|summary
-   cats: T Trimurti, P Prajapati, D Deva, A Asura/Daitya/Danava/Naga, S Sage, Y Dynasty, V Avatar of Vishnu */
-const RAW=`vishnu|Vishnu (Narayana)|The Preserver, Lotus-Navel Lord|T|||lakshmi|🪷|Rests on the serpent Shesha in the cosmic ocean. From his navel grows a lotus, and Brahma is born on it. He descends as avatars such as Narasimha, Vamana, Rama and Krishna.
-lakshmi|Lakshmi|Goddess of Fortune|D|||vishnu|🌸|Born from the churning of the ocean. She is Vishnu's eternal consort and takes birth as Sita and Rukmini.
-shiva|Shiva (Mahadeva)|The Destroyer and Renewer|T|||sati,parvati|🔱|Lives on Mount Kailasa with the Ganga in his hair. He married Sati, and later Parvati, her rebirth.
-parvati|Parvati|Daughter of the Himalaya, Rebirth of Sati|D|||shiva|🏔️|Won Shiva through deep penance. She is the mother of Ganesha and Kartikeya.
-ganesha|Ganesha|Remover of Obstacles|D|shiva|parvati||🐘|Elephant-headed god of beginnings, wisdom and learning. Scribe of the Mahabharata.
-kartikeya|Kartikeya (Murugan)|Commander of the Devas|D|shiva|parvati||🦚|Six-faced war god who slew the demon Tarakasura. Rides a peacock.
-brahma|Brahma|Svayambhu, The Creator|T,P|vishnu||saraswati|🧘|Four-headed creator, born from the lotus of Vishnu. He created the Prajapatis, the sages and the first Manu to populate the worlds.
-saraswati|Saraswati|Goddess of Knowledge and Music|D|||brahma|🎶|Rides a swan and plays the veena. She is the source of speech, learning and the arts.
-marichi|Marichi|Mind-born Son, Sage of Light|P,S|brahma||kala|✨|One of Brahma's mind-born sons and a Saptarishi. Father of Sage Kashyapa.
-kala|Kala|Wife of Marichi|S|||marichi|🌙|Mother of Kashyapa, grandmother of the Devas and Asuras.
-atri|Atri|Saptarishi|P,S|brahma||anasuya|🌿|Mind-born sage whose penance gave birth to Chandra (Moon), Dattatreya and Durvasa.
-anasuya|Anasuya|Model of Devotion|S|||atri|🪔|Her devotion was so great that the Trimurti became infants in her care.
-angiras|Angiras|Saptarishi, Fire-sage|P,S|brahma|||🔥|Mind-born sage linked with the sacred fire. Father of Brihaspati.
-brihaspati|Brihaspati|Guru of the Devas|S,D|angiras|||📿|Teacher of Indra and the gods. Rival of Shukracharya.
-pulastya|Pulastya|Mind-born Sage|P,S|brahma|||📜|Grandfather of the Rakshasa king Ravana.
-vishrava|Vishrava|Sage of the Rakshasa-Yaksha line|S|pulastya||kaikasi|🧙|Father of Kubera by one wife and of Ravana's family by Kaikasi.
-kaikasi|Kaikasi|Rakshasi Queen|A|||vishrava|👑|Mother of Ravana, Kumbhakarna and Vibhishana.
-ravana|Ravana|Ten-headed King of Lanka|A|vishrava|kaikasi||👹|Great scholar and devotee of Shiva. Abducted Sita and was slain by Rama.
-kumbhakarna|Kumbhakarna|The Sleeping Giant|A|vishrava|kaikasi||😴|Giant brother of Ravana who slept for months.
-vibhishana|Vibhishana|The Righteous Brother|A|vishrava|kaikasi||🙏|Devotee of Vishnu who joined Rama and was crowned king of Lanka.
-kubera|Kubera|Lord of Wealth|D|vishrava|||💰|God of riches who first ruled Lanka. Keeper of the northern direction.
-pulaha|Pulaha|Mind-born Sage|P,S|brahma|||📖|One of Brahma's mind-born sons and a Prajapati.
-kratu|Kratu|Mind-born Sage|P,S|brahma|||🕯️|Prajapati linked with the performance of sacrifice.
-vasishtha|Vasishtha|Brahmarishi, Guru of the Solar Kings|P,S|brahma|||🕉️|Owner of the wish-granting cow Kamadhenu. Royal teacher of the Ikshvaku kings including Rama.
-parashara|Parashara|Sage (descendant of Vasishtha)|S|vasishtha|||🧘|Vasishtha's grandson. Author of the Vishnu Purana and father of Vyasa.
-bhrigu|Bhrigu|Prajapati, Great Sage|P,S|brahma||khyati|🌟|Mind-born sage and a founder of astrology traditions.
-khyati|Khyati|Daughter of Daksha|S|daksha|prasuti|bhrigu|🌺|Wife of Bhrigu. Her descendants include Shukracharya.
-shukra|Shukracharya|Guru of the Asuras|S,A|bhrigu|khyati||🪐|Taught the Mrita-Sanjivani revival science to the Asuras.
-narada|Narada|Divine Sage-Messenger|S|brahma|||🪕|Travels the worlds with his veena singing Narayana's name.
-sanaka|Sanaka|First of the Four Kumaras|S|brahma|||👦|Eldest of the four Kumaras, Brahma's mind-born sons. They refused to create offspring, stayed forever five years old, and wander the worlds in devotion to Vishnu.
-sanandana|Sanandana|Second of the Four Kumaras|S|brahma|||👦|One of the four eternal child-sages. Known for deep knowledge of Brahman and a life of renunciation.
-sanatana|Sanatana|Third of the Four Kumaras|S|brahma|||👦|One of the four eternal child-sages born of Brahma's mind. They once cursed Vishnu's gatekeepers Jaya and Vijaya, who were then born as Hiranyaksha and Hiranyakashipu.
-sanatkumara|Sanat Kumara|Fourth of the Four Kumaras|S|brahma|||👦|Youngest of the four Kumaras and the teacher of Narada in the Chandogya Upanishad. He is also linked with Kartikeya's teachings.
-daksha|Daksha|Prajapati, The Able|P|brahma||prasuti,asikni|🙌|Fathered many daughters who became mothers of gods, demons, serpents and birds. His yagna led to Sati's sacrifice.
-prasuti|Prasuti|Daughter of Manu|P|manu|shatarupa|daksha|🌼|Wife of Daksha and mother of Sati and Khyati.
-asikni|Asikni (Panchajani)|Wife of Daksha|P|||daksha|🌷|Mother of Aditi, Diti, Danu, Kadru, Vinata and other daughters.
-sati|Sati|Daughter of Daksha, First Wife of Shiva|D|daksha|prasuti|shiva|🔥|Gave up her life at her father's yagna, and was reborn as Parvati.
-manu|Svayambhuva Manu|First Manu, Father of Mankind|P,Y|brahma||shatarupa|👑|Born from Brahma's body. The first ruler of humanity and author of the Manusmriti tradition.
-shatarupa|Shatarupa|First Woman|P|brahma||manu|🌸|Born from Brahma and wife of the first Manu.
-priyavrata|Priyavrata|King|Y|manu|shatarupa||🚀|Rode his chariot around the world seven times, and carved out the seven continents.
-uttanapada|Uttanapada|King|Y|manu|shatarupa||🤴|Father of Dhruva.
-dhruva|Dhruva|The Pole Star Child|Y|uttanapada|||⭐|Five-year-old devotee who gained Vishnu's grace and became the immovable Pole Star.
-devahuti|Devahuti|Daughter of Manu|P|manu|shatarupa|kardama|🌻|Wife of Kardama and mother of Kapila.
-kardama|Kardama|Prajapati|P,S|brahma||devahuti|🌳|Sage born from Brahma's shadow. Father of Kapila.
-kapila|Kapila|Sage of Samkhya|S,V|kardama|devahuti||🧠|Considered an avatar of Vishnu who taught the Samkhya philosophy.
-kashyapa|Sage Kashyapa|Prajapati, Father of Beings|P,S|marichi|kala|aditi,diti,danu,kadru,vinata|🌈|Husband of many daughters of Daksha. Through them he fathered the Devas, Daityas, Danavas, Nagas and birds.
-aditi|Aditi|Mother of the Devas|D|daksha|asikni|kashyapa|☀️|Her sons are the Adityas, the twelve solar gods.
-diti|Diti|Mother of the Daityas|A|daksha|asikni|kashyapa|🌑|Mother of Hiranyaksha, Hiranyakashipu, Holika and the Maruts.
-danu|Danu|Mother of the Danavas|A|daksha|asikni|kashyapa|🌊|Mother of many powerful Danava asuras.
-kadru|Kadru|Mother of the Nagas|A|daksha|asikni|kashyapa|🐍|Mother of a thousand serpents.
-vinata|Vinata|Mother of Garuda|D|daksha|asikni|kashyapa|🪶|Mother of Aruna and the divine eagle Garuda.
-indra|Indra|King of the Devas|D|kashyapa|aditi||⚡|Wields the thunderbolt Vajra and rules Svarga.
-surya|Surya (Vivasvan)|The Sun God|D|kashyapa|aditi|sanjna|🌞|Rides a seven-horse chariot. Ancestor of the Solar Dynasty.
-varuna|Varuna|Lord of the Waters|D|kashyapa|aditi||🌊|Guardian of cosmic order and the oceans.
-mitra|Mitra|God of Friendship|D|kashyapa|aditi||🤝|Aditya who stands for oaths and friendship.
-aryaman|Aryaman|God of Hospitality|D|kashyapa|aditi||🕊️|Aditya of marriage bonds and ancestors.
-pusha|Pusha|God of Journeys|D|kashyapa|aditi||🧭|Aditya who protects travellers and herds.
-bhaga|Bhaga|God of Prosperity|D|kashyapa|aditi||🎁|Aditya of wealth and shares.
-dhata|Dhata|Creator Aditya|D|kashyapa|aditi||🛠️|Aditya linked to creation and order.
-tvashta|Tvashta|Divine Architect|D|kashyapa|aditi||⚒️|Craftsman of the gods who forged Indra's Vajra.
-vamana|Vamana|Dwarf Avatar of Vishnu|D,V|kashyapa|aditi||☂️|Vishnu's fifth avatar. He asked King Bali for three steps of land and measured the cosmos.
-hiranyaksha|Hiranyaksha|Golden-Eyed Daitya|A|kashyapa|diti||👁️|Hid the Earth under the sea. Slain by Varaha, Vishnu's boar avatar.
-hiranyakashipu|Hiranyakashipu|Daitya King|A|kashyapa|diti|kayadhu|🦁|Got a boon of near-immortality. Slain by Narasimha at dusk on his doorstep.
-holika|Holika|Sister of Hiranyakashipu|A|kashyapa|diti||🔥|Tried to burn Prahlada in a fire but perished herself. The festival of Holi recalls it.
-simhika|Simhika|Sea Demoness|A|kashyapa|diti||🌊|Sister of Hiranyakashipu. Tried to swallow Hanuman.
-maruts|The Maruts|Storm Gods|D|kashyapa|diti||🌪️|Forty-nine wind gods born when Indra split Diti's womb. They became his allies.
-kayadhu|Kayadhu|Queen of the Daityas|A|||hiranyakashipu|👸|Mother of Prahlada and his siblings.
-prahlada|Prahlada|The Great Devotee|A,D|hiranyakashipu|kayadhu||🧒|Daitya prince who stayed devoted to Vishnu despite his father's anger.
-anuhlada|Anuhlada|Elder brother of Prahlada|A|hiranyakashipu|kayadhu||🛡️|Son of Hiranyakashipu.
-hlada|Hlada|Brother of Prahlada|A|hiranyakashipu|kayadhu||🛡️|Son of Hiranyakashipu.
-samhlada|Samhlada|Brother of Prahlada|A|hiranyakashipu|kayadhu||🛡️|Son of Hiranyakashipu.
-virochana|Virochana|Prahlada's Son|A|prahlada|||👑|Asura king.
-bali|Bali|The Generous Asura Emperor|A|virochana|||🎗️|Gave his kingdom to Vamana and became ruler of Sutala.
-banasura|Banasura|Thousand-armed Asura|A|bali|||🏹|Devotee of Shiva. Fought Krishna.
-vritra|Vritra|The Dragon of Drought|A|kashyapa|danu||🐲|Danava who held back the waters until Indra slew him.
-viprachitti|Viprachitti|Danava Chief|A|kashyapa|danu||🛡️|Leader of the Danavas.
-namuchi|Namuchi|Danava|A|kashyapa|danu||💀|Slain by Indra.
-shambara|Shambara|Danava|A|kashyapa|danu||🎭|Sorcerer-asura.
-puloman|Puloman|Danava|A|kashyapa|danu||⚔️|Father of Shachi, Indra's queen.
-shesha|Shesha|Serpent King, Couch of Vishnu|A|kashyapa|kadru||🐍|Thousand-hooded naga who holds the worlds on his hoods.
-vasuki|Vasuki|Serpent King|A|kashyapa|kadru||🐉|Used as the churning rope in the Samudra Manthan.
-takshaka|Takshaka|Naga King|A|kashyapa|kadru||🐍|Killed King Parikshit.
-garuda|Garuda|King of Birds, Vishnu's Mount|D|kashyapa|vinata||🦅|Fierce eagle who carries Vishnu and fights serpents.
-aruna|Aruna|Charioteer of the Sun|D|kashyapa|vinata||🌅|Elder brother of Garuda who drives Surya's chariot.
-sanjna|Sanjna|Daughter of Tvashta|D|tvashta||surya|🌺|Wife of Surya.
-vaivasvata|Vaivasvata Manu|Manu of the Present Age|Y|surya|sanjna||⛵|Saved from the great flood by Vishnu's Matsya avatar. Ancestor of the Solar and Lunar Dynasties.
-yama|Yama|God of Death and Dharma|D|surya|sanjna||⚖️|Judge of the dead. Rides a buffalo.
-yami|Yami|The River Yamuna|D|surya|sanjna||🌊|Twin sister of Yama.
-ikshvaku|Ikshvaku|Founder of the Solar Dynasty|Y|vaivasvata|||☀️|First king of Ayodhya. Ancestor of Rama.
-sagara|Sagara|Solar King (descendant)|Y|ikshvaku|||🌊|Ikshvaku descendant whose sixty thousand sons were burnt by Kapila.
-bhagiratha|Bhagiratha|Who Brought Ganga to Earth|Y|sagara|||🏞️|Descended from Sagara. Did severe penance to bring down the Ganga.
-raghu|Raghu|Famed Solar King|Y|bhagiratha|||🏰|The dynasty is called Raghuvamsha after him.
-aja|Aja|Solar King|Y|raghu|||👑|Father of Dasharatha.
-dasharatha|Dasharatha|King of Ayodhya|Y|aja||kaushalya,kaikeyi,sumitra|🏯|Father of Rama, Lakshmana, Bharata and Shatrughna.
-kaushalya|Kaushalya|Queen of Ayodhya|Y|||dasharatha|👸|Mother of Rama.
-kaikeyi|Kaikeyi|Queen of Ayodhya|Y|||dasharatha|👸|Mother of Bharata.
-sumitra|Sumitra|Queen of Ayodhya|Y|||dasharatha|👸|Mother of Lakshmana and Shatrughna.
-rama|Rama|Seventh Avatar of Vishnu|Y,V|dasharatha|kaushalya|sita|🏹|Ideal king. Won back Sita from Ravana.
-lakshmana|Lakshmana|Rama's Loyal Brother|Y|dasharatha|sumitra||🗡️|Served Rama through exile.
-bharata|Bharata (of Ayodhya)|The Devoted Brother|Y|dasharatha|kaikeyi||👞|Ruled Ayodhya for Rama's sandals.
-shatrughna|Shatrughna|Brother of Rama|Y|dasharatha|sumitra||🛡️|Twin of Lakshmana.
-sita|Sita|Daughter of the Earth|Y|||rama|🌾|Found in a furrow by King Janaka. Epitome of devotion.
-lava|Lava|Son of Rama|Y|rama|sita||🎵|Twin of Kusha.
-kusha|Kusha|Son of Rama|Y|rama|sita||🎵|Twin of Lava.
-chandra|Soma (Chandra)|Moon God, Founder of the Lunar Dynasty|D,Y|atri|anasuya|rohini|🌙|Born of Atri. Ancestor of the Chandravamsha.
-rohini|Rohini|Favourite Wife of Chandra|D|||chandra|⭐|One of the twenty-seven Nakshatras.
-budha|Budha|The Planet Mercury|D,Y|chandra|rohini|ila|🪐|Intelligent son of Chandra.
-ila|Ila|Child of Manu|Y|vaivasvata|||🌿|Wife of Budha.
-pururavas|Pururavas|Lunar King|Y|budha|ila||👑|Founder of the Aila dynasty. Famous for his love of Urvashi.
-ayu|Ayu|Lunar King|Y|pururavas|||🌙|Father of Nahusha.
-nahusha|Nahusha|Lunar King|Y|ayu|||🐍|Briefly became Indra, and fell for his pride.
-yayati|Yayati|Lunar Emperor|Y|nahusha||devayani,sharmishtha|🏛️|His five sons made five great lines, including Yadavas and Pauravas.
-devayani|Devayani|Daughter of Shukracharya|A|shukra||yayati|💍|Wife of Yayati.
-sharmishtha|Sharmishtha|Daughter of King Vrishaparva|A|||yayati|🌸|Wife of Yayati.
-yadu|Yadu|Founder of the Yadava Line|Y|yayati|devayani||🐂|Elder son. Krishna was born in his dynasty.
-turvasu|Turvasu|Son of Yayati|Y|yayati|devayani||🌄|Founded a lunar branch.
-druhyu|Druhyu|Son of Yayati|Y|yayati|sharmishtha||🏞️|Founded a lunar branch.
-anu|Anu|Son of Yayati|Y|yayati|sharmishtha||🏞️|Founded a lunar branch.
-puru|Puru|Founder of the Paurava Line|Y|yayati|sharmishtha||🤴|Youngest son who gave his youth to his father. Ancestor of the Kurus.
-shantanu|Shantanu|Kuru King (descendant of Puru)|Y|puru||ganga,satyavati|👑|King of Hastinapura. Father of Bhishma.
-ganga|Ganga|River Goddess|D|||shantanu|🌊|Mother of Bhishma.
-satyavati|Satyavati|Queen of Hastinapura|Y|||shantanu|🛶|Mother of Vyasa and Vichitravirya.
-bhishma|Bhishma|Devavrata, Grandsire of the Kurus|Y|shantanu|ganga||🏹|Took a vow of lifelong celibacy. Chose the time of his own death.
-vyasa|Vyasa|Compiler of the Vedas, Author of Mahabharata|S,Y|parashara|satyavati||📚|Divided the Veda and wrote the Mahabharata and Puranas.
-vichitravirya|Vichitravirya|King of Hastinapura|Y|shantanu|satyavati|ambika,ambalika|👑|Died young. Vyasa fathered his heirs.
-ambika|Ambika|Queen|Y|||vichitravirya|👸|Mother of Dhritarashtra.
-ambalika|Ambalika|Queen|Y|||vichitravirya|👸|Mother of Pandu.
-dhritarashtra|Dhritarashtra|Blind King of Hastinapura|Y|vyasa|ambika|gandhari|👑|Father of the hundred Kauravas.
-pandu|Pandu|King of Hastinapura|Y|vyasa|ambalika|kunti,madri|🏹|Father of the five Pandavas.
-vidura|Vidura|Wise Counsellor|Y|vyasa|||⚖️|Known for honesty. Incarnation of Dharma.
-gandhari|Gandhari|Queen of Hastinapura|Y|||dhritarashtra|🎀|Wore a blindfold to match her husband.
-duryodhana|Duryodhana|Eldest Kaurava|Y|dhritarashtra|gandhari||🦹|Opposed the Pandavas and led the Kauravas in the Kurukshetra war.
-dushasana|Dushasana|Second Kaurava|Y|dhritarashtra|gandhari||⚔️|Killed by Bhima.
-kunti|Kunti|Mother of Pandavas|Y|||pandu|🌺|Called gods by a mantra to give her sons.
-madri|Madri|Queen of Pandu|Y|||pandu|🌺|Mother of the twins Nakula and Sahadeva.
-karna|Karna|The Radiant Warrior|Y|surya|kunti||🛡️|Son of Surya and Kunti. Raised by a charioteer and fought for the Kauravas.
-yudhishthira|Yudhishthira|Eldest Pandava, Dharmaraja|Y|pandu|kunti|draupadi|⚖️|Son of Dharma. Known for truthfulness.
-bhima|Bhima|Strongest Pandava|Y|pandu|kunti|draupadi|💪|Son of the wind god Vayu.
-arjuna|Arjuna|The Great Archer|Y|pandu|kunti|draupadi,subhadra|🏹|Son of Indra. Received the Bhagavad Gita from Krishna.
-nakula|Nakula|Pandava Twin|Y|pandu|madri|draupadi|🐎|Master of horses and swordplay.
-sahadeva|Sahadeva|Pandava Twin|Y|pandu|madri|draupadi|📘|Learned and wise.
-draupadi|Draupadi|Queen of the Pandavas|Y|||yudhishthira,bhima,arjuna,nakula,sahadeva|🔥|Born from the sacrificial fire.
-subhadra|Subhadra|Sister of Krishna|Y|||arjuna|🌸|Mother of Abhimanyu.
-abhimanyu|Abhimanyu|Young Hero|Y|arjuna|subhadra||🌀|Entered the Chakravyuha at sixteen and fell in battle.
-parikshit|Parikshit|Heir of the Pandavas|Y|abhimanyu|||👶|Saved in the womb by Krishna. Ruled after the Pandavas.
-janamejaya|Janamejaya|Serpent-Sacrifice King|Y|parikshit|||🔥|Held the Sarpa Satra, in which Vyasa's Mahabharata was recited.
-vasudeva|Vasudeva|Yadava Prince|Y|yadu||devaki,rohini2|🕯️|Descendant of Yadu. Father of Krishna and Balarama.
-devaki|Devaki|Mother of Krishna|Y|||vasudeva|🌷|Imprisoned by Kamsa.
-rohini2|Rohini (of Gokula)|Wife of Vasudeva|Y|||vasudeva|🌷|Mother of Balarama.
-krishna|Krishna|Eighth Avatar of Vishnu|Y,V|vasudeva|devaki|rukmini|🦚|Guided Arjuna with the Gita and defeated Kamsa.
-balarama|Balarama|Elder Brother of Krishna|Y,V|vasudeva|rohini2||🌾|Plough-wielding brother of Krishna.
-rukmini|Rukmini|Principal Queen of Krishna|Y|||krishna|🌹|An incarnation of Lakshmi.
-pradyumna|Pradyumna|Son of Krishna|Y|krishna|rukmini||🏹|Considered a re-birth of Kamadeva.`;
+    const stories = [
+      {
+        id: "creation",
+        tab: "Brahma & creation",
+        title: "Creation stories and early families",
+        intro: "Start with Brahma's creation story, then explore a few families connected with the sage Kashyapa. These are selected branches, not every being in the Puranas.",
+        source: "Bhagavata Purana, especially Cantos 3, 4 and 8.",
+        trees: [
+          {
+            title: "A creation story",
+            note: "The lotus birth of Brahma is a story connection, not a parent-child relationship.",
+            family: { members: ["vishnu"], children: [
+              { members: ["brahma"], relation: "appears on a lotus", children: [
+                { members: ["marichi"], relation: "mind-born son", children: [
+                  { members: ["kashyapa"], relation: "son" }
+                ] },
+                { members: ["daksha"], relation: "Prajapati" },
+                { members: ["manu", "shatarupa"], relation: "first human pair in this account" }
+              ] }
+            ] }
+          },
+          {
+            title: "Kashyapa and Aditi",
+            note: "Aditi is described as Daksha's daughter in this version.",
+            family: { members: ["kashyapa", "aditi"], children: [
+              { members: ["indra"], relation: "son" },
+              { members: ["vamana"], relation: "son" }
+            ] }
+          },
+          {
+            title: "Kashyapa and Diti",
+            note: "Diti is described as Daksha's daughter in this version.",
+            family: { members: ["kashyapa", "diti"], children: [
+              { members: ["hiranyakashipu"], relation: "son", children: [
+                { members: ["prahlada"], relation: "son" }
+              ] }
+            ] }
+          }
+        ]
+      },
+      {
+        id: "rama",
+        tab: "Rama",
+        title: "Rama and the Solar Dynasty",
+        intro: "This simplified line skips many generations between Ikshvaku and Dasharatha. The family diagrams then show selected members of Dasharatha's household.",
+        source: "Valmiki Ramayana, Bala Kanda and Ayodhya Kanda.",
+        trees: [
+          {
+            title: "A selected Solar Dynasty line",
+            note: "The Ramayana gives a longer list of kings; the link here means descendant, with generations omitted.",
+            family: { members: ["surya"], children: [
+              { members: ["vaivasvata"], relation: "descendant", children: [
+                { members: ["ikshvaku"], relation: "descendant", children: [
+                  { members: ["dasharatha"], relation: "later descendant; generations omitted" }
+                ] }
+              ] }
+            ] }
+          },
+          {
+            title: "Rama, Sita and their children",
+            note: "Rama is Dasharatha and Kaushalya's son; Sita is Rama's wife.",
+            family: { members: ["dasharatha", "kaushalya"], children: [
+              { members: ["rama", "sita"], relation: "son and wife", children: [
+                { members: ["lava"], relation: "son" },
+                { members: ["kusha"], relation: "son" }
+              ] }
+            ] }
+          },
+          {
+            title: "Bharata's family",
+            note: "Dasharatha had several queens. This branch shows Bharata's mother.",
+            family: { members: ["dasharatha", "kaikeyi"], children: [
+              { members: ["bharata"], relation: "son" }
+            ] }
+          },
+          {
+            title: "Lakshmana and Shatrughna",
+            note: "The twins are shown with their mother, Sumitra.",
+            family: { members: ["dasharatha", "sumitra"], children: [
+              { members: ["lakshmana"], relation: "son" },
+              { members: ["shatrughna"], relation: "son" }
+            ] }
+          }
+        ]
+      },
+      {
+        id: "pandavas",
+        tab: "Pandavas & Kauravas",
+        title: "The Pandavas and Kauravas",
+        intro: "The Mahabharata's family relationships are layered. This map follows the royal family and adds a note where the epic also names divine fathers.",
+        source: "Mahabharata, especially Adi Parva.",
+        trees: [
+          {
+            title: "Kunti's sons",
+            note: "The epic says Kunti called on deities for these sons; the diagram shows their place in Pandu's royal family.",
+            family: { members: ["pandu", "kunti"], children: [
+              { members: ["yudhishthira"], relation: "son; associated with Dharma" },
+              { members: ["bhima"], relation: "son; associated with Vayu" },
+              { members: ["arjuna", "subhadra"], relation: "son Arjuna and his wife", children: [
+                { members: ["abhimanyu"], relation: "son", children: [
+                  { members: ["parikshit"], relation: "son" }
+                ] }
+              ] }
+            ] }
+          },
+          {
+            title: "Madri's sons",
+            note: "The twins are associated with the Ashvins in the epic.",
+            family: { members: ["pandu", "madri"], children: [
+              { members: ["nakula"], relation: "son" },
+              { members: ["sahadeva"], relation: "son" }
+            ] }
+          },
+          {
+            title: "The Kauravas",
+            note: "Only two of the many Kaurava siblings are shown.",
+            family: { members: ["dhritarashtra", "gandhari"], children: [
+              { members: ["duryodhana"], relation: "son" },
+              { members: ["dushasana"], relation: "son" }
+            ] }
+          }
+        ]
+      },
+      {
+        id: "krishna",
+        tab: "Krishna",
+        title: "Krishna's family",
+        intro: "These selected relationships come from the Krishna stories in the Bhagavata Purana. Some details differ across tellings.",
+        source: "Bhagavata Purana, Canto 10.",
+        trees: [
+          {
+            title: "Krishna and Rukmini",
+            note: "The Bhagavata Purana describes Krishna and Rukmini's marriage and family.",
+            family: { members: ["vasudeva", "devaki"], children: [
+              { members: ["krishna", "rukmini"], relation: "their son Krishna and his wife", children: [
+                { members: ["pradyumna"], relation: "son" }
+              ] }
+            ] }
+          },
+          {
+            title: "Balarama",
+            note: "In the Bhagavata Purana, Balarama is transferred from Devaki's womb to Rohini's.",
+            family: { members: ["vasudeva", "rohini"], children: [
+              { members: ["balarama"], relation: "son" }
+            ] }
+          }
+        ]
+      }
+    ];
 
-const P={};
-RAW.trim().split('\n').forEach(l=>{const[a,n,t,c,f,m,s,e,d]=l.split('|');P[a]={id:a,name:n,title:t,cats:c.split(','),f,m,sp:s?s.split(','):[],e,d,ch:[],S:new Set()}});
-Object.values(P).forEach(p=>{
-  [p.f,p.m].forEach(x=>{if(x&&P[x])P[x].ch.push(p.id)});
-  p.sp.forEach(s=>{if(P[s]){p.S.add(s);P[s].S.add(p.id)}});
-  if(P[p.f]&&P[p.m]){P[p.f].S.add(p.m);P[p.m].S.add(p.f)}
-});
-const CATS={T:['Trimurti','#fbbf24'],P:['Prajapatis','#facc15'],D:['Devas','#38bdf8'],A:['Asuras/Daityas','#fb7185'],S:['Sages','#34d399'],Y:['Dynasties','#a78bfa']};
-const IMG={}; // optional: add image URLs, e.g. IMG.brahma='brahma.jpg'
-const col=p=>(CATS[p.cats[0]]||CATS.D)[1];
-const $=s=>document.querySelector(s);
-let path=['brahma'],filter='';
+    const tabs = document.querySelector("#story-tabs");
+    const intro = document.querySelector("#story-intro");
+    const treeContainer = document.querySelector("#trees");
 
-const avatar=(p,sz)=>IMG[p.id]
-  ?`<img src="${IMG[p.id]}" alt="${p.name}" class="rounded-full object-cover shrink-0" style="width:${sz}px;height:${sz}px;border:2px solid ${col(p)}">`
-  :`<div class="rounded-full grid place-items-center shrink-0" style="width:${sz}px;height:${sz}px;font-size:${sz*.5}px;background:radial-gradient(circle at 30% 25%,${col(p)}66,#0f172a 75%);border:2px solid ${col(p)};box-shadow:0 0 14px ${col(p)}55" role="img" aria-label="${p.name}">${p.e}</div>`;
+    function renderFamily(family, isRoot) {
+      const members = family.members.map((id) => {
+        const person = people[id];
+        return `<details class="person"><summary><span class="emoji" aria-hidden="true">${person.emoji}</span><span class="person-name">${person.name}</span></summary><p class="person-note">${person.note}</p></details>`;
+      }).join('<span class="partner-mark" aria-label="spouse or partner">+</span>');
+      const relation = !isRoot && family.relation
+        ? `<span class="relationship">${family.relation}</span>`
+        : "";
+      const children = family.children?.length
+        ? `<ul>${family.children.map((child) => renderFamily(child, false)).join("")}</ul>`
+        : "";
+      return `<li>${relation}<div class="family-unit">${members}</div>${children}</li>`;
+    }
 
-function card(id,big){
-  const p=P[id];if(!p)return'';
-  return `<div class="card ${big?'w-full max-w-md mx-auto p-5 text-center':'w-40 sm:w-44 shrink-0 p-3 text-center'} rounded-2xl bg-zinc-900/90 border border-amber-500/30 cursor-pointer" data-f="${id}" tabindex="0" role="button">
-    <div class="flex justify-center mb-2">${avatar(p,big?112:64)}</div>
-    <div class="title ${big?'text-2xl text-amber-300 glow':'text-sm text-amber-200'} leading-tight">${p.name}</div>
-    <div class="text-slate-400 ${big?'text-sm mt-1':'text-[11px] mt-0.5'} leading-snug">${p.title}</div>
-    ${p.cats.includes('V')?'<div class="mt-1 text-[10px] text-amber-300">★ Avatar of Vishnu</div>':''}
-    <button class="mt-2 px-2.5 py-1 rounded-md text-xs border border-amber-500/40 text-amber-200 hover:bg-amber-500/15 inline-flex items-center gap-1" data-d="${id}"><i data-lucide="info" class="w-3 h-3"></i>View Details</button>
-  </div>`;
-}
-const row=(ids,label)=>ids.length?`<section class="mt-6"><h3 class="text-sm text-amber-300/90 mb-2 title">${label}</h3><div class="flex flex-wrap sm:justify-center gap-3 justify-center">${ids.map(i=>card(i)).join('')}</div></section>`:'';
+    function selectStory(id, focusTab = false) {
+      const story = stories.find((item) => item.id === id) || stories[0];
+      tabs.innerHTML = stories.map((item) =>
+        `<button type="button" data-story="${item.id}" aria-pressed="${item.id === story.id}">${item.tab}</button>`
+      ).join("");
+      intro.innerHTML = `<h2>${story.title}</h2><p>${story.intro}</p><p class="notice"><strong>Source:</strong> ${story.source}</p>`;
+      treeContainer.innerHTML = story.trees.map((tree) =>
+        `<article class="tree-card"><div class="tree-heading"><h3>${tree.title}</h3><p>${tree.note}</p></div><div class="tree-scroll"><div class="tree"><ul>${renderFamily(tree.family, true)}</ul></div></div></article>`
+      ).join("");
+      if (focusTab) tabs.querySelector(`[data-story="${story.id}"]`).focus();
+    }
 
-function lineage(id){const a=[];let c=P[id];while(c){a.unshift(c.id);c=P[c.f]||P[c.m]}return a}
+    tabs.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-story]");
+      if (button) selectStory(button.dataset.story, true);
+    });
 
-function render(){
-  const id=path[path.length-1],p=P[id];
-  const sibs=(P[p.f]?P[p.f].ch:P[p.m]?P[p.m].ch:[]).filter(x=>x!==id&&(P[x].f===p.f&&P[x].m===p.m));
-  const spouses=[...p.S];
-  const groups={};p.ch.forEach(c=>{const o=P[c].f===id?P[c].m:P[c].f;(groups[o||'']=groups[o||'']||[]).push(c)});
-  let h='<div class="stage">';
-  const anc=lineage(id).slice(0,-1);
-  if(anc.length)h+=`<div class="text-center text-xs text-slate-400 mb-3 scroll-x whitespace-nowrap">Ancestors: ${anc.map(a=>`<a href="#" class="text-amber-300 hover:underline" data-f="${a}">${P[a].name}</a>`).join(' › ')}</div>`;
-  h+=row([p.f,p.m].filter(x=>x&&P[x]),'Parents');
-  h+=`<div class="my-5 flex items-center justify-center"><div class="w-full">${card(id,true)}</div></div>`;
-  h+=row(sibs,'Siblings (same parents)');
-  h+=row(spouses,spouses.length>1?'Spouses':'Spouse');
-  const keys=Object.keys(groups);
-  if(keys.length){
-    h+=`<h2 class="title text-xl text-amber-300 text-center mt-8 mb-1">Children</h2>`;
-    keys.forEach(k=>h+=row(groups[k],k&&P[k]?`With ${P[k].name} (${groups[k].length})`:`Children (${groups[k].length})`));
-  }else h+='<p class="text-center text-slate-500 mt-8 text-sm">No recorded children in this tree.</p>';
-  h+='</div>';
-  $('#stage').innerHTML=h;
-  $('#crumbs').innerHTML=path.map((x,i)=>`<a href="#" data-c="${i}" class="${i===path.length-1?'text-amber-300 font-bold':'text-slate-300 hover:text-amber-200'}">${P[x].name}</a>`).join('<span class="text-slate-600 mx-1">›</span>');
-  $('#crumbs').scrollLeft=1e5;
-  $('#back').disabled=path.length<2;$('#back').classList.toggle('opacity-40',path.length<2);
-  lucide.createIcons();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function go(id){if(!P[id]||id===path[path.length-1])return;path.push(id);render()}
-const chip=(id)=>`<button class="m-0.5 px-2.5 py-1 rounded-full text-xs border" style="border-color:${col(P[id])};color:${col(P[id])}" data-j="${id}">${P[id].e} ${P[id].name}</button>`;
-function sect(l,ids){return ids.length?`<div class="mt-4"><div class="text-xs text-slate-400 mb-1">${l}</div>${ids.map(chip).join('')}</div>`:''}
-function openDrawer(id){
-  const p=P[id],d=$('#drawer');
-  d.innerHTML=`<div class="p-5"><button class="float-right p-1 rounded hover:bg-slate-800" id="closeD" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
-  <div class="flex justify-center my-3">${avatar(p,128)}</div>
-  <h2 class="title text-2xl text-amber-300 glow text-center">${p.name}</h2>
-  <p class="text-center text-slate-300 text-sm">${p.title}</p>
-  <div class="flex flex-wrap justify-center gap-1 mt-2">${p.cats.map(c=>c==='V'?'<span class="text-xs px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-bold">Avatar of Vishnu</span>':`<span class="text-xs px-2 py-0.5 rounded-full border" style="border-color:${CATS[c][1]};color:${CATS[c][1]}">${CATS[c][0]}</span>`).join('')}</div>
-  <div class="mt-4 text-sm leading-relaxed bg-zinc-900 border border-amber-500/20 rounded-xl p-3"><b class="text-amber-200">Puranic summary.</b> ${p.d}</div>
-  ${sect('Father',P[p.f]?[p.f]:[])}${sect('Mother',P[p.m]?[p.m]:[])}${sect('Spouse(s)',[...p.S])}${sect('Children ('+p.ch.length+')',p.ch)}
-  <button class="mt-6 w-full py-2 rounded-lg bg-amber-500 text-slate-950 font-bold" data-j="${id}">Focus on ${p.name}</button></div>`;
-  d.classList.remove('translate-x-full');$('#scrim').classList.remove('hidden');lucide.createIcons();
-}
-const closeDrawer=()=>{$('#drawer').classList.add('translate-x-full');$('#scrim').classList.add('hidden')};
-
-function search(){
-  const q=$('#q').value.trim().toLowerCase(),r=$('#results');
-  if(!q&&!filter){r.classList.add('hidden');return}
-  const m=Object.values(P).filter(p=>(!q||p.name.toLowerCase().includes(q)||p.title.toLowerCase().includes(q))&&(!filter||p.cats.includes(filter)));
-  r.classList.remove('hidden');
-  r.innerHTML=m.length?m.slice(0,60).map(p=>`<button class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-800" data-j="${p.id}">${avatar(p,32)}<span><span class="text-sm text-amber-200">${p.name}</span><span class="block text-[11px] text-slate-400">${p.title}</span></span></button>`).join(''):'<div class="p-3 text-sm text-slate-400">No match. Try another spelling or clear the filter.</div>';
-}
-function pills(){
-  $('#pills').innerHTML=Object.entries(CATS).map(([k,[n,c]])=>`<button data-p="${k}" class="px-3 py-1 rounded-full text-xs whitespace-nowrap border" style="border-color:${c};${filter===k?`background:${c};color:#020617;font-weight:700`:`color:${c}`}">${n}</button>`).join('');
-}
-
-document.addEventListener('click',e=>{
-  const t=e.target,d=t.closest('[data-d]'),j=t.closest('[data-j]'),f=t.closest('[data-f]'),c=t.closest('[data-c]'),pl=t.closest('[data-p]');
-  if(d){e.stopPropagation();openDrawer(d.dataset.d);return}
-  if(j){closeDrawer();$('#results').classList.add('hidden');$('#q').value='';filter='';pills();go(j.dataset.j);return}
-  if(pl){filter=filter===pl.dataset.p?'':pl.dataset.p;pills();search();return}
-  if(c){e.preventDefault();path=path.slice(0,+c.dataset.c+1);render();return}
-  if(f){e.preventDefault();go(f.dataset.f);return}
-  if(t.closest('#closeD')||t.id==='scrim')closeDrawer();
-});
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape')closeDrawer();
-  if((e.key==='Enter'||e.key===' ')&&e.target.dataset&&e.target.dataset.f&&e.target.tagName==='DIV'){e.preventDefault();go(e.target.dataset.f)}
-});
-$('#q').addEventListener('input',search);
-$('#home').onclick=()=>{path=['brahma'];closeDrawer();render()};
-$('#back').onclick=()=>{if(path.length>1){path.pop();render()}};
-pills();render();
-</script>
+    tabs.innerHTML = stories.map((story) =>
+      `<button type="button" data-story="${story.id}" aria-pressed="false">${story.tab}</button>`
+    ).join("");
+    selectStory(stories[0].id);
+  </script>
 </body>
 </html>
