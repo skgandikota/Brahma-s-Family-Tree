@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Explore simple, illustrated family trees from Hindu stories and epics.">
-  <title>Hindu Mythology Family Tree</title>
+  <meta name="description" content="Explore Hindu Puranic and epic genealogies, relationships, and traditions.">
+  <title>Hindu Mythology: Family Trees and Lineages</title>
   <style>
     :root {
       color-scheme: light;
@@ -251,8 +251,8 @@
 </head>
 <body>
   <header>
-    <h1>🌳 Hindu Mythology Family Tree</h1>
-    <p class="subtitle">Follow a few well-known families and story lineages. Choose a story, then tap any person to learn more.</p>
+    <h1>Hindu Mythology: Family Trees and Lineages</h1>
+    <p class="subtitle">Explore relationships across Puranic stories and the epics. Choose a lineage and select a figure to see context and connections.</p>
   </header>
 
   <main>
@@ -261,8 +261,8 @@
     <section id="trees" aria-label="Family tree diagrams"></section>
     <section class="sources" aria-labelledby="sources-title">
       <h2 id="sources-title">A note about these stories</h2>
-      <p>These are short, selected maps, not one complete or definitive family tree. Hindu texts and regional traditions sometimes tell relationships differently. Some diagrams show descendants with generations omitted; tap a person for context.</p>
-      <p>Story references: <i>Bhagavata Purana</i>, Cantos 3, 4, 8 and 10; <i>Valmiki Ramayana</i>, Bala Kanda and Ayodhya Kanda; and the <i>Mahabharata</i>, Adi Parva.</p>
+      <p>These diagrams distinguish mind-born creation, descent, marriage, and divine parentage rather than treating every connection as biological. They present selected accounts, not one definitive genealogy; relationships and lists can differ across texts and regional traditions. Where generations are omitted, the diagram labels the connection as descent.</p>
+      <p>For Brahma's mind-born children, see <a href="https://vanisource.org/wiki/SB_3.12:_Creation_of_the_Kumaras_and_Others" target="_blank" rel="noopener noreferrer"><i>Bhagavata Purana</i> 3.12.4 and 3.12.21–24</a>. Other references include Cantos 4, 8 and 10; the <i>Valmiki Ramayana</i>, Bala Kanda and Ayodhya Kanda; and the <i>Mahabharata</i>, Adi Parva.</p>
     </section>
   </main>
 
@@ -270,11 +270,24 @@
     const people = {
       vishnu: { name: "Vishnu", emoji: "🪷", note: "In this creation story, a lotus grows from Vishnu's navel and Brahma appears on it." },
       brahma: { name: "Brahma", emoji: "🧘", note: "The creator in this story. He is shown here as the beginning of several creation lineages." },
-      marichi: { name: "Marichi", emoji: "✨", note: "One of Brahma's mind-born sages in many Puranic accounts." },
+      sanaka: { name: "Sanaka", emoji: "🕊️", note: "One of the four Kumaras, the sages Brahma creates at the beginning of this account. The Kumaras choose a life of renunciation rather than producing descendants." },
+      sananda: { name: "Sananda (Sanandana)", emoji: "🕊️", note: "One of the four Kumaras created by Brahma. Names are transliterated differently across editions." },
+      sanatana: { name: "Sanatana", emoji: "🕊️", note: "One of the four Kumaras created by Brahma, described as an eternal child-sage." },
+      sanatkumara: { name: "Sanat-kumara", emoji: "🕊️", note: "One of the four Kumaras created by Brahma and associated with renunciation and spiritual teaching." },
+      rudra: { name: "Rudra", emoji: "🔱", note: "In Bhagavata Purana 3.12, Rudra emerges from Brahma's brow after Brahma's anger takes form. Accounts describe Rudra and Shiva in different ways." },
+      marichi: { name: "Marichi", emoji: "✨", note: "One of the ten sons named in Bhagavata Purana 3.12.22. The text links him to Kashyapa." },
+      atri: { name: "Atri", emoji: "🌿", note: "One of the ten sons named in Bhagavata Purana 3.12.22; a revered sage and one of the Saptarishis." },
+      angiras: { name: "Angiras", emoji: "🔥", note: "One of the ten sons named in Bhagavata Purana 3.12.22; a sage associated with Vedic hymns." },
+      pulastya: { name: "Pulastya", emoji: "📜", note: "One of the ten sons named in Bhagavata Purana 3.12.22; a sage in several Puranic genealogies." },
+      pulaha: { name: "Pulaha", emoji: "🌱", note: "One of the ten sons named in Bhagavata Purana 3.12.22 and a member of the Saptarishi tradition." },
+      kratu: { name: "Kratu", emoji: "🕯️", note: "One of the ten sons named in Bhagavata Purana 3.12.22; associated with sacrificial rites." },
+      bhrigu: { name: "Bhrigu", emoji: "🌟", note: "One of the ten sons named in Bhagavata Purana 3.12.22; an important sage in Puranic traditions." },
+      vasistha: { name: "Vasistha", emoji: "🕉️", note: "One of the ten sons named in Bhagavata Purana 3.12.22 and a prominent sage in the Ramayana tradition." },
+      narada: { name: "Narada", emoji: "🪕", note: "One of the ten sons named in Bhagavata Purana 3.12.22; a travelling sage and devotee who appears in many texts." },
       kashyapa: { name: "Kashyapa", emoji: "🌈", note: "A sage linked to many families of gods and other beings in Puranic stories." },
       manu: { name: "Svayambhuva Manu", emoji: "👑", note: "The first Manu in this creation account. The story of Manu and Shatarupa is told in the Bhagavata Purana." },
       shatarupa: { name: "Shatarupa", emoji: "🌸", note: "Manu's wife in this creation account; together they are described as the first human pair." },
-      daksha: { name: "Daksha", emoji: "🌿", note: "A Prajapati. In this account, his daughters include Aditi and Diti." },
+      daksha: { name: "Daksha", emoji: "🌿", note: "One of the ten sons named in Bhagavata Purana 3.12.22. A Prajapati whose descendants connect to many Puranic lineages." },
       aditi: { name: "Aditi", emoji: "☀️", note: "Kashyapa's wife and mother of the Adityas, including Indra. She is also the mother of Vamana in this story." },
       diti: { name: "Diti", emoji: "🌙", note: "Kashyapa's wife and mother of the Daityas in this account." },
       indra: { name: "Indra", emoji: "⚡", note: "A leading Deva, associated with the sky and storms." },
@@ -324,20 +337,52 @@
         id: "creation",
         tab: "Brahma & creation",
         title: "Creation stories and early families",
-        intro: "Start with Brahma's creation story, then explore a few families connected with the sage Kashyapa. These are selected branches, not every being in the Puranas.",
+        intro: "The Bhagavata Purana describes distinct acts of creation: first the four Kumaras, then ten sons for the continuation of creation. Follow those branches and continue into selected lineages through Marichi, Kashyapa, Aditi and Diti.",
         source: "Bhagavata Purana, especially Cantos 3, 4 and 8.",
         trees: [
           {
-            title: "A creation story",
-            note: "The lotus birth of Brahma is a story connection, not a parent-child relationship.",
+            title: "Vishnu, Brahma and Kashyapa",
+            note: "This account describes Brahma appearing on a lotus from Vishnu; Marichi is then named as Brahma's son and Kashyapa as Marichi's son.",
             family: { members: ["vishnu"], children: [
               { members: ["brahma"], relation: "appears on a lotus", children: [
                 { members: ["marichi"], relation: "mind-born son", children: [
                   { members: ["kashyapa"], relation: "son" }
-                ] },
-                { members: ["daksha"], relation: "Prajapati" },
-                { members: ["manu", "shatarupa"], relation: "first human pair in this account" }
+                ] }
               ] }
+            ] }
+          },
+          {
+            title: "Brahma's mind-born children",
+            note: "Bhagavata Purana 3.12.4 names the four Kumaras; 3.12.21–24 names ten sons and describes how they were born. Other texts give additional creation accounts.",
+            family: { members: ["brahma"], children: [
+              { members: ["sanaka"], relation: "Kumara" },
+              { members: ["sananda"], relation: "Kumara" },
+              { members: ["sanatana"], relation: "Kumara" },
+              { members: ["sanatkumara"], relation: "Kumara" },
+              { members: ["marichi"], relation: "son" },
+              { members: ["atri"], relation: "son" },
+              { members: ["angiras"], relation: "son" },
+              { members: ["pulastya"], relation: "son" },
+              { members: ["pulaha"], relation: "son" },
+              { members: ["kratu"], relation: "son" },
+              { members: ["bhrigu"], relation: "son" },
+              { members: ["vasistha"], relation: "son" },
+              { members: ["daksha"], relation: "son" },
+              { members: ["narada"], relation: "son" }
+            ] }
+          },
+          {
+            title: "Manu and Shatarupa",
+            note: "The Bhagavata Purana describes Manu and Shatarupa as created from Brahma's body in a separate act—not among the ten mind-born sons listed above.",
+            family: { members: ["brahma"], children: [
+              { members: ["manu", "shatarupa"], relation: "created pair" }
+            ] }
+          },
+          {
+            title: "Rudra",
+            note: "This account describes Rudra's emergence from Brahma's brow as a separate creation episode; it is not part of the list of ten sons in 3.12.22.",
+            family: { members: ["brahma"], children: [
+              { members: ["rudra"], relation: "emerges from Brahma's brow" }
             ] }
           },
           {
